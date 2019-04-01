@@ -27,7 +27,7 @@ endif()
 set(CMAKE_CONFIGURATION_TYPES Debug;Release)
 
 ## build the game libs folder
-add_library(ASGE UNKNOWN IMPORTED)
+add_library(ASGE UNKNOWN IMPORTED ../Source/Birds.cpp ../Source/Birds.h ../Source/Pigs.cpp ../Source/Pigs.h ../Source/Objects.cpp ../Source/Objects.h)
 add_subdirectory(Libs)
 target_link_libraries(${PROJECT_NAME} ASGE)
 
