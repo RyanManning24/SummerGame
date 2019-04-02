@@ -6,6 +6,7 @@
 #include <Engine/Keys.h>
 #include <Engine/Sprite.h>
 
+#include "Birds.h"
 #include "Game.h"
 
 /**
@@ -36,6 +37,49 @@ Angry::~Angry()
 clickHandler callback should also be set in the initialise function.
 *   @return  True if the game initialised correctly.
 */
+
+bool Angry::loadPlayer()
+{
+  float Player_Start_X = 100;
+  float Player_Start_Y = 900;
+
+  for (int i = 0; i < 3; i += 1)
+  {
+    if (Player[i].addSpriteComponent(renderer.get(),
+                                     "data/Textures/chicken.png"))
+    {
+      Player[i].spriteComponent()->getSprite()->xPos(Player_Start_X);
+      Player[i].spriteComponent()->getSprite()->yPos(Player_Start_Y);
+    }
+    else
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool Angry::loadEnemies()
+{
+  float Eniemes_Start_X = 900;
+  float Eniemes_Start_Y = 900;
+
+  for (int i = 0; i < 3; i += 1)
+  {
+    if (Enemies[i].addSpriteComponent(renderer.get(),
+                                      "/data/Textures/crocodile.png"))
+    {
+      Enemies->spriteComponent()->getSprite()->yPos(Eniemes_Start_Y);
+      Enemies->spriteComponent()->getSprite()->xPos(Eniemes_Start_X);
+    }
+    else
+    {
+      return false;
+    }
+  }
+  return true;
+}
+
 bool Angry::init()
 {
   setupResolution();
@@ -58,7 +102,18 @@ bool Angry::init()
   mouse_callback_id =
     inputs->addCallbackFnc(ASGE::E_MOUSE_CLICK, &Angry::clickHandler, this);
 
+  loadPlayer();
+  loadEnemies();
+
   if (!loadBackgrounds())
+  {
+    return false;
+  }
+  if (!loadPlayer())
+  {
+    return false;
+  }
+  if (!loadEnemies())
   {
     return false;
   }

@@ -7,6 +7,4 @@ Objects::Objects() {}
 
 Objects::~Objects() {}
 
-void Objects::free() {}
-
 void Objects::LoadSprite() {}

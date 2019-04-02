@@ -5,7 +5,9 @@
 #ifndef ANGRYNERDS_PIGS_H
 #define ANGRYNERDS_PIGS_H
 
-class Pigs
+#include "Components/GameObject.h"
+
+class Pigs : public GameObject
 {
  public:
   Pigs();
@@ -13,7 +15,6 @@ class Pigs
 
  private:
   void LoadSprite();
-  void free();
 
   int Pigs_Left = 2;
 };

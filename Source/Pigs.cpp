@@ -7,6 +7,4 @@ Pigs::Pigs() {}
 
 Pigs::~Pigs() {}
 
-void Pigs::free() {}
-
 void Pigs::LoadSprite() {}

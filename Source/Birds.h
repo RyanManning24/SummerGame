@@ -1,11 +1,12 @@
 //
 // Created by Ryanm on 01/04/2019.
 //
+#include "Components/GameObject.h"
 
 #ifndef ANGRYNERDS_BIRDS_H
-#define ANGRYNERDS_BIRDS_H
+#  define ANGRYNERDS_BIRDS_H
 
-class Birds
+class Birds : public GameObject
 {
  public:
   Birds();
@@ -13,8 +14,6 @@ class Birds
 
  private:
   float BirdsMovement();
-  void LoadSprite();
-  void free();
 };
 
 #endif // ANGRYNERDS_BIRDS_H

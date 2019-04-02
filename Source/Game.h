@@ -2,7 +2,9 @@
 #include <Engine/OGLGame.h>
 #include <string>
 
+#include "Birds.h"
 #include "Components/GameObject.h"
+#include "Pigs.h"
 #include "Utility/Rect.h"
 
 /**
@@ -20,6 +22,8 @@ class Angry : public ASGE::OGLGame
   void clickHandler(const ASGE::SharedEventData data);
   void setupResolution();
   bool loadBackgrounds();
+  bool loadPlayer();
+  bool loadEnemies();
 
   virtual void update(const ASGE::GameTime&) override;
   virtual void render(const ASGE::GameTime&) override;
@@ -30,6 +34,11 @@ class Angry : public ASGE::OGLGame
   // Add your GameObjects
   GameObject background_layer;
   GameObject menu_layer;
+
+  Birds Player[3];
+  Pigs Enemies[3];
+
+  int Level_Select = 0;
 
   bool in_menu = true;
 };

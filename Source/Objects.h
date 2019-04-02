@@ -5,7 +5,9 @@
 #ifndef ANGRYNERDS_OBJECTS_H
 #define ANGRYNERDS_OBJECTS_H
 
-class Objects
+#include "Components/GameObject.h"
+
+class Objects : public GameObject
 {
  public:
   Objects();
@@ -13,7 +15,6 @@ class Objects
 
  private:
   void LoadSprite();
-  void free();
 
   int Times_hit = 0;
   int Number_Of_Objects = 0;

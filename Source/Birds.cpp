@@ -11,7 +11,3 @@ float Birds::BirdsMovement()
 {
   return 0;
 }
-
-void Birds::free() {}
-
-void Birds::LoadSprite() {}
