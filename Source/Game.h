@@ -41,4 +41,5 @@ class Angry : public ASGE::OGLGame
   int Level_Select = 0;
 
   bool in_menu = true;
+  int Level_Selected = 0;
 };

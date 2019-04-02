@@ -41,7 +41,7 @@ clickHandler callback should also be set in the initialise function.
 bool Angry::loadPlayer()
 {
   float Player_Start_X = 100;
-  float Player_Start_Y = 900;
+  float Player_Start_Y = 750;
 
   for (int i = 0; i < 3; i += 1)
   {
@@ -61,16 +61,16 @@ bool Angry::loadPlayer()
 
 bool Angry::loadEnemies()
 {
-  float Eniemes_Start_X = 900;
-  float Eniemes_Start_Y = 900;
+  float Eniemes_Start_X = 1700;
+  float Eniemes_Start_Y = 750;
 
-  for (int i = 0; i < 3; i += 1)
+  for (int i = 0; i < 3; i++)
   {
     if (Enemies[i].addSpriteComponent(renderer.get(),
                                       "/data/Textures/crocodile.png"))
     {
-      Enemies->spriteComponent()->getSprite()->yPos(Eniemes_Start_Y);
-      Enemies->spriteComponent()->getSprite()->xPos(Eniemes_Start_X);
+      Enemies[i].spriteComponent()->getSprite()->yPos(Eniemes_Start_Y);
+      Enemies[i].spriteComponent()->getSprite()->xPos(Eniemes_Start_X);
     }
     else
     {
@@ -254,5 +254,13 @@ void Angry::render(const ASGE::GameTime& game_time)
   else
   {
     renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
+    if (Level_Select == 0)
+    {
+      for (int i = 0; i < 3; i++)
+      {
+        renderer->renderSprite(*Player[i].spriteComponent()->getSprite());
+        renderer->renderSprite(*Enemies[i].spriteComponent()->getSprite());
+      }
+    }
   }
 }
