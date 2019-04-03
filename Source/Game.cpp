@@ -197,6 +197,22 @@ void Angry::keyHandler(const ASGE::SharedEventData data)
     {
       in_menu = !in_menu;
     }
+
+    if (key->key == ASGE::KEYS::KEY_DOWN &&
+        key->action == ASGE::KEYS::KEY_RELEASED)
+    {
+      Level_Select++;
+    }
+    if (key->key == ASGE::KEYS::KEY_UP &&
+        key->action == ASGE::KEYS::KEY_RELEASED)
+    {
+      Level_Select--;
+    }
+
+    if (Level_Select == 3)
+    {
+      Level_Select = 1;
+    }
   }
 }
 
@@ -250,11 +266,33 @@ void Angry::render(const ASGE::GameTime& game_time)
   if (in_menu)
   {
     renderer->renderSprite(*menu_layer.spriteComponent()->getSprite());
+
+    renderer->renderText("Press space to start and to pick a level!",
+                         200,
+                         150,
+                         3,
+                         ASGE::COLOURS::BLACK);
+    renderer->renderText("Use the arrow keys to navigate the menu!",
+                         200,
+                         250,
+                         3,
+                         ASGE::COLOURS::BLACK);
+
+    renderer->renderText(Level_Select == 1 ? ">Level 1" : "Level 1",
+                         350,
+                         450,
+                         2,
+                         ASGE::COLOURS::BLACK);
+    renderer->renderText(Level_Select == 2 ? ">Level 2" : "Level 2",
+                         350,
+                         650,
+                         2,
+                         ASGE::COLOURS::BLACK);
   }
   else
   {
     renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
-    if (Level_Select == 0)
+    if (Level_Select == 1)
     {
       for (int i = 0; i < 3; i++)
       {

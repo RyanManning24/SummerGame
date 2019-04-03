@@ -38,8 +38,7 @@ class Angry : public ASGE::OGLGame
   Birds Player[3];
   Pigs Enemies[3];
 
-  int Level_Select = 0;
+  int Level_Select = 1;
 
   bool in_menu = true;
-  int Level_Selected = 0;
 };
