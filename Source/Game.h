@@ -38,6 +38,10 @@ class Angry : public ASGE::OGLGame
   Birds Player[3];
   Pigs Enemies[3];
 
+  int Player_Count = 0;
+  int Enemy_Count = 0;
+  int Score = 0;
+
   int Level_Select = 1;
 
   bool in_menu = true;

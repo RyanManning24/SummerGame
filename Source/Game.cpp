@@ -40,16 +40,19 @@ clickHandler callback should also be set in the initialise function.
 
 bool Angry::loadPlayer()
 {
-  float Player_Start_X = 100;
+  float Player_X = 0;
   float Player_Start_Y = 750;
 
-  for (int i = 0; i < 3; i += 1)
+  for (int i = 0; i < 3; i++)
   {
     if (Player[i].addSpriteComponent(renderer.get(),
                                      "data/Textures/chicken.png"))
     {
-      Player[i].spriteComponent()->getSprite()->xPos(Player_Start_X);
+      float Player_Width = Player->spriteComponent()->getSprite()->width();
+      Player_X += Player_Width;
+      Player[i].spriteComponent()->getSprite()->xPos(Player_X);
       Player[i].spriteComponent()->getSprite()->yPos(Player_Start_Y);
+      Player_Count++;
     }
     else
     {
@@ -61,16 +64,19 @@ bool Angry::loadPlayer()
 
 bool Angry::loadEnemies()
 {
-  float Eniemes_Start_X = 1700;
-  float Eniemes_Start_Y = 750;
+  float Enemies_Start_Y = 760;
+  float Enemy_X = static_cast<float>(game_width);
 
   for (int i = 0; i < 3; i++)
   {
     if (Enemies[i].addSpriteComponent(renderer.get(),
                                       "/data/Textures/crocodile.png"))
     {
-      Enemies[i].spriteComponent()->getSprite()->yPos(Eniemes_Start_Y);
-      Enemies[i].spriteComponent()->getSprite()->xPos(Eniemes_Start_X);
+      float Enemies_Width = Enemies[i].spriteComponent()->getSprite()->width();
+      Enemy_X -= Enemies_Width;
+      Enemies[i].spriteComponent()->getSprite()->yPos(Enemies_Start_Y);
+      Enemies[i].spriteComponent()->getSprite()->xPos(Enemy_X);
+      Enemy_Count++;
     }
     else
     {
@@ -292,6 +298,13 @@ void Angry::render(const ASGE::GameTime& game_time)
   else
   {
     renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
+    std::string Score_str = "Score: " + std::to_string(Score);
+    renderer->renderText(
+      Score_str.c_str(), game_width - 150, 40, 1.0, ASGE::COLOURS::BLACK);
+    std::string Chicken_str =
+      "Chicken's Remaining " + std::to_string(Player_Count);
+    renderer->renderText(
+      Chicken_str.c_str(), 150, 40, 1.0, ASGE::COLOURS::BLACK);
     if (Level_Select == 1)
     {
       for (int i = 0; i < 3; i++)
