@@ -109,15 +109,15 @@ bool Angry::init()
   mouse_callback_id =
     inputs->addCallbackFnc(ASGE::E_MOUSE_CLICK, &Angry::clickHandler, this);
 
-  if (!loadBackgrounds())
-  {
-    return false;
-  }
   if (!loadPlayer())
   {
     return false;
   }
   if (!loadEnemies())
+  {
+    return false;
+  }
+  if (!loadBackgrounds())
   {
     return false;
   }
@@ -217,6 +217,23 @@ void Angry::keyHandler(const ASGE::SharedEventData data)
     {
       Level_Select = 1;
     }
+
+    if (menu_Option == 10)
+    {
+      if (key->key == ASGE::KEYS::KEY_ENTER &&
+          key->action == ASGE::KEYS::KEY_RELEASED)
+      {
+        menu_Option = 0;
+      }
+    }
+    if (menu_Option == 20)
+    {
+      if (key->key == ASGE::KEYS::KEY_ENTER &&
+          key->action == ASGE::KEYS::KEY_RELEASED)
+      {
+        menu_Option = 0;
+      }
+    }
   }
 }
 
@@ -298,7 +315,6 @@ void Angry::Boundary()
     if (Player[Player_Count - 1].spriteComponent()->getSprite()->xPos() >=
         static_cast<float>(game_width))
     {
-      Player[Player_Count - 1].Set_Visability(false);
       Player[Player_Count - 1].Set_Velocity(0, 0);
       Player_Count--;
       Mouse_is_released = false;
@@ -307,7 +323,6 @@ void Angry::Boundary()
     else if (Player[Player_Count - 1].spriteComponent()->getSprite()->yPos() >=
              850)
     {
-      Player[Player_Count].Set_Visability(false);
       Player[Player_Count - 1].Set_Velocity(0, 0);
       Player_Count--;
       Mouse_is_released = false;
@@ -315,15 +330,38 @@ void Angry::Boundary()
     }
   }
 }
+void Angry::Playability()
+{
+  if (Player_Count == 0)
+  {
+    in_menu = true;
+    menu_Option = 10;
+    Score = 0;
+    Player_Count = 0;
+    Enemy_Count = 0;
+    loadPlayer();
+    loadEnemies();
+  }
+
+  if (Enemy_Count == 0)
+  {
+    in_menu = true;
+    menu_Option = 20;
+    Score = 0;
+    Player_Count = 0;
+    loadPlayer();
+    loadEnemies();
+  }
+}
 
 void Angry::Collision()
 {
   for (int i = 0; i < 3; i++)
   {
-    if (Enemies[i].Get_Visability())
+    if (Player[Player_Count].spriteComponent()->getBoundingBox().isInside(
+          Enemies[i].spriteComponent()->getBoundingBox()))
     {
-      if (Player[Player_Count].spriteComponent()->getBoundingBox().isInside(
-            Enemies[i].spriteComponent()->getBoundingBox()))
+      if (Enemies[i].Get_Visability())
       {
         Enemies[i].Set_Visability(false);
         Score += 10;
@@ -346,6 +384,7 @@ void Angry::update(const ASGE::GameTime& game_time)
 
   if (!in_menu)
   {
+    Playability();
     BirdMovement(game_time);
     if (Mouse_is_released)
     {
@@ -369,34 +408,50 @@ void Angry::render(const ASGE::GameTime& game_time)
 
   if (in_menu)
   {
-    renderer->renderSprite(*menu_layer.spriteComponent()->getSprite());
+    if (menu_Option == 0)
+    {
+      renderer->renderSprite(*menu_layer.spriteComponent()->getSprite());
 
-    renderer->renderText("Press space to start and to pick a level!",
-                         200,
-                         150,
-                         3,
-                         ASGE::COLOURS::BLACK);
-    renderer->renderText("Use the arrow keys to navigate the menu!",
-                         200,
-                         250,
-                         3,
-                         ASGE::COLOURS::BLACK);
+      renderer->renderText("Press space to start and to pick a level!",
+                           200,
+                           150,
+                           3,
+                           ASGE::COLOURS::BLACK);
+      renderer->renderText("Use the arrow keys to navigate the menu!",
+                           200,
+                           250,
+                           3,
+                           ASGE::COLOURS::BLACK);
 
-    renderer->renderText(Level_Select == 1 ? ">Level 1" : "Level 1",
-                         350,
-                         450,
-                         2,
-                         ASGE::COLOURS::BLACK);
-    renderer->renderText(Level_Select == 2 ? ">Level 2" : "Level 2",
-                         350,
-                         650,
-                         2,
-                         ASGE::COLOURS::BLACK);
+      renderer->renderText(Level_Select == 1 ? ">Level 1" : "Level 1",
+                           350,
+                           450,
+                           2,
+                           ASGE::COLOURS::BLACK);
+      renderer->renderText(Level_Select == 2 ? ">Level 2" : "Level 2",
+                           350,
+                           650,
+                           2,
+                           ASGE::COLOURS::BLACK);
+    }
+    if (menu_Option == 10)
+    {
+      renderer->renderSprite(*menu_layer.spriteComponent()->getSprite());
+      renderer->renderText("You Lost!!", 700, 100, 3, ASGE::COLOURS::BLACK);
+      renderer->renderText(
+        "Press Enter to go back to menu", 400, 850, 3, ASGE::COLOURS::BLACK);
+    }
+    if (menu_Option == 20)
+    {
+      renderer->renderSprite(*menu_layer.spriteComponent()->getSprite());
+      renderer->renderText("You WiN", 700, 100, 3, ASGE::COLOURS::BLACK);
+      renderer->renderText(
+        "Press Enter to go back to menu", 400, 850, 3, ASGE::COLOURS::BLACK);
+    }
   }
   else
   {
     renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
-
     std::string Score_str = "Score: " + std::to_string(Score);
     renderer->renderText(
       Score_str.c_str(), game_width - 150, 40, 1.0, ASGE::COLOURS::BLACK);
@@ -404,6 +459,7 @@ void Angry::render(const ASGE::GameTime& game_time)
       "Chicken's Remaining " + std::to_string(Player_Count);
     renderer->renderText(
       Chicken_str.c_str(), 150, 40, 1.0, ASGE::COLOURS::BLACK);
+
     if (Level_Select == 1)
     {
       for (int i = 0; i < 3; i++)

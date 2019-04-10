@@ -28,6 +28,7 @@ class Angry : public ASGE::OGLGame
   void Gravity(const ASGE::GameTime& game_time);
   void Boundary();
   void Collision();
+  void Playability();
 
   virtual void update(const ASGE::GameTime&) override;
   virtual void render(const ASGE::GameTime&) override;
@@ -58,4 +59,5 @@ class Angry : public ASGE::OGLGame
   int Level_Select = 1;
 
   bool in_menu = true;
+  int menu_Option = 0;
 };
