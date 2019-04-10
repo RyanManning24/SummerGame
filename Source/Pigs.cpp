@@ -6,5 +6,3 @@
 Pigs::Pigs() {}
 
 Pigs::~Pigs() {}
-
-void Pigs::LoadSprite() {}

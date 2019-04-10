@@ -14,8 +14,6 @@ class Objects : public GameObject
   ~Objects();
 
  private:
-  void LoadSprite();
-
   int Times_hit = 0;
   int Number_Of_Objects = 0;
 };

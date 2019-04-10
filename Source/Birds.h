@@ -13,7 +13,6 @@ class Birds : public GameObject
   ~Birds();
 
  private:
-  float BirdsMovement();
 };
 
 #endif // ANGRYNERDS_BIRDS_H

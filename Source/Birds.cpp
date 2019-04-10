@@ -6,8 +6,3 @@
 Birds::Birds() {}
 
 Birds::~Birds() {}
-
-float Birds::BirdsMovement()
-{
-  return 0;
-}

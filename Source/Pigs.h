@@ -14,8 +14,6 @@ class Pigs : public GameObject
   ~Pigs();
 
  private:
-  void LoadSprite();
-
   int Pigs_Left = 2;
 };
 

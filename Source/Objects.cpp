@@ -6,5 +6,3 @@
 Objects::Objects() {}
 
 Objects::~Objects() {}
-
-void Objects::LoadSprite() {}
