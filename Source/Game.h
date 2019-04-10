@@ -24,6 +24,10 @@ class Angry : public ASGE::OGLGame
   bool loadBackgrounds();
   bool loadPlayer();
   bool loadEnemies();
+  void BirdMovement(const ASGE::GameTime& game_time);
+  void Gravity(const ASGE::GameTime& game_time);
+  void Boundary();
+  void Collision();
 
   virtual void update(const ASGE::GameTime&) override;
   virtual void render(const ASGE::GameTime&) override;
@@ -38,9 +42,18 @@ class Angry : public ASGE::OGLGame
   Birds Player[3];
   Pigs Enemies[3];
 
+  float Bird_Ypos = 0;
+  float Bird_Xpos = 0;
+
   int Player_Count = 0;
   int Enemy_Count = 0;
   int Score = 0;
+
+  int Switch = 0;
+  double First_Click_X = 0;
+  double First_Click_Y = 0;
+  bool Mouse_is_pressed = false;
+  bool Mouse_is_released = false;
 
   int Level_Select = 1;
 

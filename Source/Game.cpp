@@ -5,6 +5,7 @@
 #include <Engine/InputEvents.h>
 #include <Engine/Keys.h>
 #include <Engine/Sprite.h>
+#include <iostream>
 
 #include "Birds.h"
 #include "Game.h"
@@ -48,11 +49,11 @@ bool Angry::loadPlayer()
     if (Player[i].addSpriteComponent(renderer.get(),
                                      "data/Textures/chicken.png"))
     {
+      Player_Count++;
       float Player_Width = Player->spriteComponent()->getSprite()->width();
       Player_X += Player_Width;
       Player[i].spriteComponent()->getSprite()->xPos(Player_X);
       Player[i].spriteComponent()->getSprite()->yPos(Player_Start_Y);
-      Player_Count++;
     }
     else
     {
@@ -107,9 +108,6 @@ bool Angry::init()
 
   mouse_callback_id =
     inputs->addCallbackFnc(ASGE::E_MOUSE_CLICK, &Angry::clickHandler, this);
-
-  loadPlayer();
-  loadEnemies();
 
   if (!loadBackgrounds())
   {
@@ -238,9 +236,102 @@ void Angry::clickHandler(const ASGE::SharedEventData data)
   double x_pos = click->xpos;
   double y_pos = click->ypos;
 
-  ASGE::DebugPrinter() << x_pos << "," << y_pos << std::endl;
+  if (Switch % 2 == 0)
+  {
+    Mouse_is_released = false;
+    Mouse_is_pressed = true;
+    First_Click_X = x_pos;
+    First_Click_Y = y_pos;
+    Switch++;
+  }
+  else if (Switch % 2 == 1)
+  {
+    Mouse_is_released = true;
+    Mouse_is_pressed = false;
+    First_Click_X -= x_pos;
+    First_Click_Y -= y_pos;
+    Player[Player_Count - 1].Set_Velocity(
+      static_cast<float>(First_Click_X) / 100,
+      static_cast<float>(First_Click_Y) / 100);
+    Player[Player_Count - 1].Get_Velocity().normalise();
+    Switch = 0;
+  }
 }
 
+void Angry::BirdMovement(const ASGE::GameTime& game_time)
+{
+  auto dt_sec = game_time.delta.count() / 1000.0;
+  if (Mouse_is_released && Player[Player_Count - 1].Get_Visability())
+  {
+    Player[Player_Count - 1].Set_Speed(1);
+
+    Bird_Xpos = Player[Player_Count - 1].spriteComponent()->getSprite()->xPos();
+    Bird_Ypos = Player[Player_Count - 1].spriteComponent()->getSprite()->yPos();
+    Bird_Xpos +=
+      Player[Player_Count - 1].Get_Velocity().x +
+      Player[Player_Count - 1].Get_Speed() * static_cast<float>(dt_sec);
+    Bird_Ypos +=
+      Player[Player_Count - 1].Get_Velocity().y +
+      Player[Player_Count - 1].Get_Speed() * static_cast<float>(dt_sec);
+    Player[Player_Count - 1].spriteComponent()->getSprite()->xPos(Bird_Xpos);
+    Player[Player_Count - 1].spriteComponent()->getSprite()->yPos(Bird_Ypos);
+  }
+}
+
+void Angry::Gravity(const ASGE::GameTime& game_time)
+{
+  auto dt_sec = game_time.delta.count() / 1000.0;
+  const float gravity = 0.01f;
+  Bird_Ypos = Player[Player_Count - 1].spriteComponent()->getSprite()->yPos();
+  Player[Player_Count - 1].Set_Velocity(
+    Player[Player_Count - 1].Get_Velocity().x,
+    Player[Player_Count - 1].Get_Velocity().y + gravity);
+  Bird_Ypos -=
+    Player[Player_Count - 1].Get_Velocity().y * static_cast<float>(dt_sec);
+  Player[Player_Count - 1].spriteComponent()->getSprite()->yPos(Bird_Ypos);
+}
+
+void Angry::Boundary()
+{
+  if (Player[Player_Count - 1].Get_Visability())
+  {
+    if (Player[Player_Count - 1].spriteComponent()->getSprite()->xPos() >=
+        static_cast<float>(game_width))
+    {
+      Player[Player_Count - 1].Set_Visability(false);
+      Player[Player_Count - 1].Set_Velocity(0, 0);
+      Player_Count--;
+      Mouse_is_released = false;
+      Mouse_is_pressed = false;
+    }
+    else if (Player[Player_Count - 1].spriteComponent()->getSprite()->yPos() >=
+             850)
+    {
+      Player[Player_Count].Set_Visability(false);
+      Player[Player_Count - 1].Set_Velocity(0, 0);
+      Player_Count--;
+      Mouse_is_released = false;
+      Mouse_is_pressed = false;
+    }
+  }
+}
+
+void Angry::Collision()
+{
+  for (int i = 0; i < 3; i++)
+  {
+    if (Enemies[i].Get_Visability())
+    {
+      if (Player[Player_Count].spriteComponent()->getBoundingBox().isInside(
+            Enemies[i].spriteComponent()->getBoundingBox()))
+      {
+        Enemies[i].Set_Visability(false);
+        Score += 10;
+        Enemy_Count--;
+      }
+    }
+  }
+}
 /**
 *   @brief   Updates the scene
 *   @details Prepares the renderer subsystem before drawing the
@@ -255,6 +346,13 @@ void Angry::update(const ASGE::GameTime& game_time)
 
   if (!in_menu)
   {
+    BirdMovement(game_time);
+    if (Mouse_is_released)
+    {
+      Gravity(game_time);
+      Boundary();
+      Collision();
+    }
   }
 }
 
@@ -298,6 +396,7 @@ void Angry::render(const ASGE::GameTime& game_time)
   else
   {
     renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
+
     std::string Score_str = "Score: " + std::to_string(Score);
     renderer->renderText(
       Score_str.c_str(), game_width - 150, 40, 1.0, ASGE::COLOURS::BLACK);
@@ -309,8 +408,17 @@ void Angry::render(const ASGE::GameTime& game_time)
     {
       for (int i = 0; i < 3; i++)
       {
-        renderer->renderSprite(*Player[i].spriteComponent()->getSprite());
-        renderer->renderSprite(*Enemies[i].spriteComponent()->getSprite());
+        if (Player[Player_Count - 1].Get_Visability())
+        {
+          renderer->renderSprite(*Player[i].spriteComponent()->getSprite());
+        }
+      }
+      for (int j = 0; j < 3; j++)
+      {
+        if (Enemies[Enemy_Count - 1].Get_Visability())
+        {
+          renderer->renderSprite(*Enemies[j].spriteComponent()->getSprite());
+        }
       }
     }
   }

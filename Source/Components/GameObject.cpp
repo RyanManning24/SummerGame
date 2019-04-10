@@ -31,3 +31,33 @@ SpriteComponent* GameObject::spriteComponent()
 {
   return sprite_component;
 }
+
+vector2 GameObject::Get_Velocity()
+{
+  return Velocity;
+}
+
+void GameObject::Set_Velocity(float VectorX, float VectorY)
+{
+  Velocity = vector2(VectorX, VectorY);
+}
+
+void GameObject::Set_Speed(float set_Speed)
+{
+  Speed = set_Speed;
+}
+
+float GameObject::Get_Speed()
+{
+  return Speed;
+}
+
+bool GameObject::Get_Visability()
+{
+  return Visability;
+}
+
+void GameObject::Set_Visability(bool setVisability)
+{
+  Visability = setVisability;
+}
