@@ -46,7 +46,7 @@ class Angry : public ASGE::OGLGame
   float Bird_Ypos = 0;
   float Bird_Xpos = 0;
 
-  int Player_Count = 0;
+  int Player_Count = -1;
   int Enemy_Count = 0;
   int Score = 0;
 
