@@ -284,10 +284,12 @@ void Angry::BirdMovement(const ASGE::GameTime& game_time)
 
     Bird_Xpos = Player[Player_Count].spriteComponent()->getSprite()->xPos();
     Bird_Ypos = Player[Player_Count].spriteComponent()->getSprite()->yPos();
-    Bird_Xpos += Player[Player_Count].Get_Velocity().x +
-                 Player[Player_Count].Get_Speed() * static_cast<float>(dt_sec);
-    Bird_Ypos += Player[Player_Count].Get_Velocity().y +
-                 Player[Player_Count].Get_Speed() * static_cast<float>(dt_sec);
+    Bird_Xpos +=
+      Player[Player_Count].Get_Velocity().x *
+      (Player[Player_Count].Get_Speed() * static_cast<float>(dt_sec));
+    Bird_Ypos +=
+      Player[Player_Count].Get_Velocity().y *
+      (Player[Player_Count].Get_Speed() * static_cast<float>(dt_sec));
     Player[Player_Count].spriteComponent()->getSprite()->xPos(Bird_Xpos);
     Player[Player_Count].spriteComponent()->getSprite()->yPos(Bird_Ypos);
   }
@@ -296,7 +298,7 @@ void Angry::BirdMovement(const ASGE::GameTime& game_time)
 void Angry::Gravity(const ASGE::GameTime& game_time)
 {
   auto dt_sec = game_time.delta.count() / 1000.0;
-  const float gravity = 0.01f;
+  const float gravity = 0.002f;
   if (Player[Player_Count].Get_Visability() &&
       Player[Player_Count].Get_Velocity().x != 0 &&
       Player[Player_Count].Get_Velocity().y != 0)
