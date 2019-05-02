@@ -6,11 +6,14 @@
 #ifndef ANGRYNERDS_BIRDS_H
 #  define ANGRYNERDS_BIRDS_H
 
-class Birds : public GameObject
+//@Feedback: this class is not needed
+class Bird : public GameObject
 {
  public:
-  Birds();
-  ~Birds();
+  Bird();
+
+  //@feedback: you must override the base destructor to prevent memory leaks
+  ~Bird() override;
 
  private:
 };

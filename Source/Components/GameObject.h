@@ -21,7 +21,7 @@ class GameObject
   /**
    *  Destructor. Frees dynamic memory.
    */
-  ~GameObject();
+  virtual ~GameObject();
 
   /**
    *  Allocates and attaches a sprite component to the object.

@@ -2,9 +2,9 @@
 #include <Engine/OGLGame.h>
 #include <string>
 
-#include "Birds.h"
+#include "Bird.h"
 #include "Components/GameObject.h"
-#include "Pigs.h"
+#include "Pig.h"
 #include "Utility/Rect.h"
 
 /**
@@ -40,24 +40,36 @@ class Angry : public ASGE::OGLGame
   GameObject background_layer;
   GameObject menu_layer;
 
-  Birds Player[3];
-  Pigs Enemies[3];
+  //@Feedbac: you've completed ignored the coding standards
+  Bird players[3];
+  Pig enemies[3];
 
+  //@Feedback: why isn't this in the bird class :confused:?
   float Bird_Ypos = 0;
   float Bird_Xpos = 0;
 
-  int Player_Count = -1;
-  int Enemy_Count = 0;
-  int Score = 0;
+  int player_count = -1;
+  int enemy_count = 0;
+  int score = 0;
 
   int Switch = 0;
   double First_Click_X = 0;
   double First_Click_Y = 0;
-  bool Mouse_is_pressed = false;
-  bool Mouse_is_released = false;
 
+  //@Feedback: if the mouse isn't pressed you can work out if it's released
+  // without using a second variable.
+  // if mouse_event == released && mouse_pressed then set to false
+  bool mouse_pressed = false;
+  bool mouse_released = false;
+
+  //@Feedback: consider a level class or a game state system
   int Level_Select = 1;
-
   bool in_menu = true;
   int menu_Option = 0;
+
+  void handleLevel10(const ASGE::KeyEvent* key);
+
+  void handleOption10(const ASGE::KeyEvent* key);
+
+  void handleMenu(const ASGE::KeyEvent* key);
 };

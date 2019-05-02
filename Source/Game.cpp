@@ -7,7 +7,7 @@
 #include <Engine/Sprite.h>
 #include <iostream>
 
-#include "Birds.h"
+#include "Bird.h"
 #include "Game.h"
 
 /**
@@ -46,14 +46,14 @@ bool Angry::loadPlayer()
 
   for (int i = 0; i < 3; i++)
   {
-    if (Player[i].addSpriteComponent(renderer.get(),
-                                     "data/Textures/chicken.png"))
+    if (players[i].addSpriteComponent(renderer.get(),
+                                      "data/Textures/chicken.png"))
     {
-      Player_Count++;
-      float Player_Width = Player->spriteComponent()->getSprite()->width();
+      player_count++;
+      float Player_Width = players->spriteComponent()->getSprite()->width();
       Player_X += Player_Width;
-      Player[i].spriteComponent()->getSprite()->xPos(Player_X);
-      Player[i].spriteComponent()->getSprite()->yPos(Player_Start_Y);
+      players[i].spriteComponent()->getSprite()->xPos(Player_X);
+      players[i].spriteComponent()->getSprite()->yPos(Player_Start_Y);
     }
     else
     {
@@ -70,15 +70,15 @@ bool Angry::loadEnemies()
 
   for (int i = 0; i < 3; i++)
   {
-    if (Enemies[i].addSpriteComponent(renderer.get(),
+    if (enemies[i].addSpriteComponent(renderer.get(),
                                       "/data/Textures/crocodile.png"))
     {
       float Enemies_Width =
-        Enemies[i].spriteComponent()->getSprite()->width() + 100;
+        enemies[i].spriteComponent()->getSprite()->width() + 100;
       Enemy_X -= Enemies_Width;
-      Enemies[i].spriteComponent()->getSprite()->yPos(Enemies_Start_Y);
-      Enemies[i].spriteComponent()->getSprite()->xPos(Enemy_X);
-      Enemy_Count++;
+      enemies[i].spriteComponent()->getSprite()->yPos(Enemies_Start_Y);
+      enemies[i].spriteComponent()->getSprite()->xPos(Enemy_X);
+      enemy_count++;
     }
     else
     {
@@ -198,43 +198,57 @@ void Angry::keyHandler(const ASGE::SharedEventData data)
 
   else if (in_menu)
   {
-    if (key->key == ASGE::KEYS::KEY_SPACE)
-    {
-      in_menu = !in_menu;
-    }
+    handleMenu(key);
+  }
+}
 
-    if (key->key == ASGE::KEYS::KEY_DOWN &&
+void Angry::handleMenu(const ASGE::KeyEvent* key)
+{
+  if (key->key == ASGE::KEYS::KEY_SPACE)
+  {
+    in_menu = !in_menu;
+  }
+
+  if (key->key == ASGE::KEYS::KEY_DOWN &&
+      key->action == ASGE::KEYS::KEY_RELEASED)
+  {
+    Level_Select++;
+  }
+  if (key->key == ASGE::KEYS::KEY_UP && key->action == ASGE::KEYS::KEY_RELEASED)
+  {
+    Level_Select--;
+  }
+
+  if (Level_Select == 3)
+  {
+    Level_Select = 1;
+  }
+
+  if (menu_Option == 10)
+  {
+    handleOption10(key);
+  }
+  if (menu_Option == 20)
+  {
+    if (key->key == ASGE::KEYS::KEY_ENTER &&
         key->action == ASGE::KEYS::KEY_RELEASED)
     {
-      Level_Select++;
+      menu_Option = 0;
     }
-    if (key->key == ASGE::KEYS::KEY_UP &&
-        key->action == ASGE::KEYS::KEY_RELEASED)
-    {
-      Level_Select--;
-    }
+  }
+}
 
-    if (Level_Select == 3)
-    {
-      Level_Select = 1;
-    }
+void Angry::handleOption10(const ASGE::KeyEvent* key)
+{
+  handleLevel10(key);
+}
 
-    if (menu_Option == 10)
-    {
-      if (key->key == ASGE::KEYS::KEY_ENTER &&
-          key->action == ASGE::KEYS::KEY_RELEASED)
-      {
-        menu_Option = 0;
-      }
-    }
-    if (menu_Option == 20)
-    {
-      if (key->key == ASGE::KEYS::KEY_ENTER &&
-          key->action == ASGE::KEYS::KEY_RELEASED)
-      {
-        menu_Option = 0;
-      }
-    }
+void Angry::handleLevel10(const ASGE::KeyEvent* key)
+{
+  if (key->key == ASGE::KEYS::KEY_ENTER &&
+      key->action == ASGE::KEYS::KEY_RELEASED)
+  {
+    menu_Option = 0;
   }
 }
 
@@ -256,21 +270,21 @@ void Angry::clickHandler(const ASGE::SharedEventData data)
 
   if (Switch % 2 == 0)
   {
-    Mouse_is_released = false;
-    Mouse_is_pressed = true;
+    mouse_released = false;
+    mouse_pressed = true;
     First_Click_X = x_pos;
     First_Click_Y = y_pos;
     Switch++;
   }
   else if (Switch % 2 == 1)
   {
-    Mouse_is_released = true;
-    Mouse_is_pressed = false;
+    mouse_released = true;
+    mouse_pressed = false;
     First_Click_X -= x_pos;
     First_Click_Y -= y_pos;
-    Player[Player_Count].Set_Velocity(static_cast<float>(First_Click_X) / 100,
-                                      static_cast<float>(First_Click_Y) / 100);
-    Player[Player_Count].Get_Velocity().normalise();
+    players[player_count].Set_Velocity(static_cast<float>(First_Click_X) / 100,
+                                       static_cast<float>(First_Click_Y) / 100);
+    players[player_count].Get_Velocity().normalise();
     Switch = 0;
   }
 }
@@ -278,20 +292,22 @@ void Angry::clickHandler(const ASGE::SharedEventData data)
 void Angry::BirdMovement(const ASGE::GameTime& game_time)
 {
   auto dt_sec = game_time.delta.count() / 1000.0;
-  if (Mouse_is_released)
+  if (mouse_released)
   {
-    Player[Player_Count].Set_Speed(1);
+    players[player_count].Set_Speed(1);
 
-    Bird_Xpos = Player[Player_Count].spriteComponent()->getSprite()->xPos();
-    Bird_Ypos = Player[Player_Count].spriteComponent()->getSprite()->yPos();
+    Bird_Xpos = players[player_count].spriteComponent()->getSprite()->xPos();
+    Bird_Ypos = players[player_count].spriteComponent()->getSprite()->yPos();
     Bird_Xpos +=
-      Player[Player_Count].Get_Velocity().x *
-      (Player[Player_Count].Get_Speed() * static_cast<float>(dt_sec));
+      players[player_count].Get_Velocity().x *
+      (players[player_count].Get_Speed() * static_cast<float>(dt_sec));
+
     Bird_Ypos +=
-      Player[Player_Count].Get_Velocity().y *
-      (Player[Player_Count].Get_Speed() * static_cast<float>(dt_sec));
-    Player[Player_Count].spriteComponent()->getSprite()->xPos(Bird_Xpos);
-    Player[Player_Count].spriteComponent()->getSprite()->yPos(Bird_Ypos);
+      players[player_count].Get_Velocity().y *
+      (players[player_count].Get_Speed() * static_cast<float>(dt_sec));
+
+    players[player_count].spriteComponent()->getSprite()->xPos(Bird_Xpos);
+    players[player_count].spriteComponent()->getSprite()->yPos(Bird_Ypos);
   }
 }
 
@@ -299,68 +315,70 @@ void Angry::Gravity(const ASGE::GameTime& game_time)
 {
   auto dt_sec = game_time.delta.count() / 1000.0;
   const float gravity = 0.002f;
-  if (Player[Player_Count].Get_Visability() &&
-      Player[Player_Count].Get_Velocity().x != 0 &&
-      Player[Player_Count].Get_Velocity().y != 0)
+  if (players[player_count].Get_Visability() &&
+      players[player_count].Get_Velocity().x != 0 &&
+      players[player_count].Get_Velocity().y != 0)
   {
-    Bird_Ypos = Player[Player_Count].spriteComponent()->getSprite()->yPos();
-    Player[Player_Count].Set_Velocity(Player[Player_Count].Get_Velocity().x,
-                                      Player[Player_Count].Get_Velocity().y +
-                                        gravity);
+    Bird_Ypos = players[player_count].spriteComponent()->getSprite()->yPos();
+    players[player_count].Set_Velocity(players[player_count].Get_Velocity().x,
+                                       players[player_count].Get_Velocity().y +
+                                         gravity);
     Bird_Ypos -=
-      Player[Player_Count].Get_Velocity().y * static_cast<float>(dt_sec);
-    Player[Player_Count].spriteComponent()->getSprite()->yPos(Bird_Ypos);
+      players[player_count].Get_Velocity().y * static_cast<float>(dt_sec);
+    players[player_count].spriteComponent()->getSprite()->yPos(Bird_Ypos);
   }
 }
 
 void Angry::Boundary()
 {
-  if (Player[Player_Count].spriteComponent()->getSprite()->xPos() >=
+  if (players[player_count].spriteComponent()->getSprite()->xPos() >=
       static_cast<float>(game_width))
   {
-    Player[Player_Count].Set_Visability(false);
-    Player_Count--;
-    Mouse_is_released = false;
-    Mouse_is_pressed = false;
+    players[player_count].Set_Visability(false);
+    player_count--;
+    mouse_released = false;
+    mouse_pressed = false;
   }
-  else if (Player[Player_Count].spriteComponent()->getSprite()->yPos() >= 850)
+  else if (players[player_count].spriteComponent()->getSprite()->yPos() >= 850)
   {
-    Player[Player_Count].Set_Visability(false);
-    Player_Count--;
-    Mouse_is_released = false;
-    Mouse_is_pressed = false;
+    players[player_count].Set_Visability(false);
+    player_count--;
+    mouse_released = false;
+    mouse_pressed = false;
   }
 }
+
+//@Feedback: what does playability even mean?
 void Angry::Playability()
 {
-  if (Enemy_Count == 0)
+  if (enemy_count == 0)
   {
     in_menu = true;
     menu_Option = 20;
-    Score = 0;
-    Enemy_Count = 3;
+    score = 0;
+    enemy_count = 3;
     loadPlayer();
     loadEnemies();
     for (int i = 0; i < 3; i++)
     {
-      Enemies[i].Set_Visability(true);
-      Player[i].Set_Visability(true);
-      Player[i].Set_Velocity(0, 0);
+      enemies[i].Set_Visability(true);
+      players[i].Set_Visability(true);
+      players[i].Set_Velocity(0, 0);
     }
   }
-  else if (Player_Count == -1)
+  else if (player_count == -1)
   {
     in_menu = true;
     menu_Option = 10;
-    Score = 0;
-    Enemy_Count = 0;
+    score = 0;
+    enemy_count = 0;
     loadPlayer();
     loadEnemies();
     for (int i = 0; i < 3; i++)
     {
-      Player[i].Set_Visability(true);
-      Enemies[i].Set_Visability(true);
-      Player[i].Set_Velocity(0, 0);
+      players[i].Set_Visability(true);
+      enemies[i].Set_Visability(true);
+      players[i].Set_Velocity(0, 0);
     }
   }
 }
@@ -369,17 +387,17 @@ void Angry::Collision()
 {
   for (int i = 0; i < 3; i++)
   {
-    if (Player[Player_Count].Get_Visability() && Enemies[i].Get_Visability())
+    if (players[player_count].Get_Visability() && enemies[i].Get_Visability())
     {
-      if (Player[Player_Count].spriteComponent()->getBoundingBox().isInside(
-            Enemies[i].spriteComponent()->getBoundingBox()))
+      if (players[player_count].spriteComponent()->getBoundingBox().isInside(
+            enemies[i].spriteComponent()->getBoundingBox()))
       {
-        Enemies[i].Set_Visability(false);
-        Player[Player_Count].Set_Visability(false);
-        Score += 10;
-        Enemy_Count--;
-        Player_Count--;
-        Player[Player_Count].Set_Velocity(0, 0);
+        enemies[i].Set_Visability(false);
+        players[player_count].Set_Visability(false);
+        score += 10;
+        enemy_count--;
+        player_count--;
+        players[player_count].Set_Velocity(0, 0);
       }
     }
   }
@@ -401,7 +419,7 @@ void Angry::update(const ASGE::GameTime& game_time)
     Playability();
     BirdMovement(game_time);
     Collision();
-    if (Mouse_is_released)
+    if (mouse_released)
     {
       Gravity(game_time);
       Boundary();
@@ -466,11 +484,11 @@ void Angry::render(const ASGE::GameTime& game_time)
   else
   {
     renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
-    std::string Score_str = "Score: " + std::to_string(Score);
+    std::string Score_str = "Score: " + std::to_string(score);
     renderer->renderText(
       Score_str.c_str(), game_width - 150, 40, 1.0, ASGE::COLOURS::BLACK);
     std::string Chicken_str =
-      "Chicken's Remaining " + std::to_string(Player_Count);
+      "Chicken's Remaining " + std::to_string(player_count);
     renderer->renderText(
       Chicken_str.c_str(), 150, 40, 1.0, ASGE::COLOURS::BLACK);
 
@@ -478,16 +496,16 @@ void Angry::render(const ASGE::GameTime& game_time)
     {
       for (int i = 0; i < 3; i++)
       {
-        if (Player[i].Get_Visability())
+        if (players[i].Get_Visability())
         {
-          renderer->renderSprite(*Player[i].spriteComponent()->getSprite());
+          renderer->renderSprite(*players[i].spriteComponent()->getSprite());
         }
       }
       for (int j = 0; j < 3; j++)
       {
-        if (Enemies[j].Get_Visability())
+        if (enemies[j].Get_Visability())
         {
-          renderer->renderSprite(*Enemies[j].spriteComponent()->getSprite());
+          renderer->renderSprite(*enemies[j].spriteComponent()->getSprite());
         }
       }
     }
