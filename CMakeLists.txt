@@ -34,7 +34,7 @@ add_executable(
         "Source/Utility/Rect.h"
         "Source/Utility/Rect.cpp"
         "Source/Utility/Vector2.h"
-        "Source/Utility/Vector2.cpp" Source/Bird.cpp Source/Bird.h Source/Pig.cpp Source/Pig.h )
+        "Source/Utility/Vector2.cpp")
 
 ## utility scripts
 set(ENABLE_SOUND OFF CACHE BOOL "Adds SoLoud to the Project" FORCE)
