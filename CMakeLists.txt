@@ -34,7 +34,7 @@ add_executable(
         "Source/Utility/Rect.h"
         "Source/Utility/Rect.cpp"
         "Source/Utility/Vector2.h"
-        "Source/Utility/Vector2.cpp")
+        "Source/Utility/Vector2.cpp" Source/GameLevel.cpp Source/GameLevel.h Source/Player.cpp Source/Player.h Source/Enemy.cpp Source/Enemy.h)
 
 ## utility scripts
 set(ENABLE_SOUND OFF CACHE BOOL "Adds SoLoud to the Project" FORCE)
