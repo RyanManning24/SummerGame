@@ -8,7 +8,13 @@
 class GameLevel
 {
  public:
+  GameLevel();
+  ~GameLevel();
+
  private:
+  const int playerCount = 1;
+  int EnemyCount = 0;
+  int GameLevel = 0;
 };
 
 #endif // ANGRYNERDS_GAMELEVEL_H

@@ -3,3 +3,10 @@
 //
 
 #include "Enemy.h"
+#include "Components/GameObject.h"
+
+Enemy::Enemy() {}
+
+Enemy::~Enemy() {}
+
+void Enemy::gameobjectSetup() {}

@@ -3,3 +3,10 @@
 //
 
 #include "Player.h"
+#include "Components/GameObject.h"
+
+Player::Player() {}
+
+Player::~Player() {}
+
+void Player::gameobjectSetup() {}

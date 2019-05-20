@@ -66,12 +66,17 @@ bool Angry::init()
     return false;
   }
 
+  if (!loadBackgrounds())
+  {
+    return false;
+  }
+
   return true;
 }
 
 bool Angry::loadBackgrounds()
 {
-  std::string filename = "data/Textures/Backdrops/Menu.jpg";
+  std::string filename = "data/Textures/Backdrops/Room.png";
 
   if (!background_layer.addSpriteComponent(renderer.get(), filename))
   {
@@ -116,6 +121,15 @@ void Angry::keyHandler(const ASGE::SharedEventData data)
   if (key->key == ASGE::KEYS::KEY_ESCAPE)
   {
     signalExit();
+  }
+
+  if (in_menu)
+  {
+    if (key->key == ASGE::KEYS::KEY_ENTER &&
+        key->action == ASGE::KEYS::KEY_RELEASED)
+    {
+      in_menu = false;
+    }
   }
 }
 
@@ -164,5 +178,6 @@ void Angry::render(const ASGE::GameTime& game_time)
   }
   else
   {
+    renderer->renderSprite(*background_layer.spriteComponent()->getSprite());
   }
 }

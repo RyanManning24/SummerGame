@@ -10,8 +10,14 @@
 class Player
 {
  public:
+  Player();
+  ~Player();
+
+  void gameobjectSetup();
+
  private:
   GameObject Sprite;
+  GameObject Player_Tears;
 
   float X_pos = 910;
   float Y_pos = 540;
